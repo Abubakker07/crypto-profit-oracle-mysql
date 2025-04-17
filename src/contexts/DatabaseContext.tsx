@@ -1,11 +1,16 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { toast } from "@/components/ui/use-toast";
+import { ProfitabilityResult, User } from '@/types';
 
 interface DatabaseContextType {
   isConnected: boolean;
   testConnection: () => void;
   executeQuery: (query: string) => Promise<any>;
+  saveCalculation: (result: ProfitabilityResult) => Promise<number>;
+  getCalculationHistory: (userId: number) => Promise<ProfitabilityResult[]>;
+  getUserByCredentials: (email: string, password: string) => Promise<User | null>;
+  registerUser: (username: string, email: string, password: string) => Promise<User | null>;
   loading: boolean;
 }
 
@@ -50,7 +55,7 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
     }, 800);
   };
 
-  // Simulate query execution (In a real app, this would execute actual MySQL queries)
+  // Simulate query execution
   const executeQuery = async (query: string) => {
     setLoading(true);
     try {
@@ -58,14 +63,13 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
       await new Promise(resolve => setTimeout(resolve, 600));
       console.log("Executing query:", query);
       
-      // Return mock data based on the query
       let result;
       if (query.includes("SELECT * FROM miners")) {
         result = [
-          { id: 1, name: "Antminer S19 Pro", hashrate: 110, power: 3250, release_date: "2020-05-12" },
-          { id: 2, name: "Whatsminer M30S++", hashrate: 112, power: 3472, release_date: "2020-08-15" },
-          { id: 3, name: "Avalon 1246", hashrate: 90, power: 3420, release_date: "2020-09-22" },
-          { id: 4, name: "Innosilicon T3+", hashrate: 67, power: 3300, release_date: "2019-11-05" }
+          { id: 1, name: "Antminer S19 Pro", hashrate: 110, power: 3250 },
+          { id: 2, name: "Whatsminer M30S++", hashrate: 112, power: 3472 },
+          { id: 3, name: "Avalon 1246", hashrate: 90, power: 3420 },
+          { id: 4, name: "Innosilicon T3+", hashrate: 67, power: 3300 }
         ];
       } else if (query.includes("SELECT * FROM cryptocurrencies")) {
         result = [
@@ -73,20 +77,6 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
           { id: 2, name: "Ethereum", symbol: "ETH", current_price: 3150.18, algorithm: "Ethash" },
           { id: 3, name: "Litecoin", symbol: "LTC", current_price: 85.42, algorithm: "Scrypt" },
           { id: 4, name: "Monero", symbol: "XMR", current_price: 178.65, algorithm: "RandomX" }
-        ];
-      } else if (query.includes("SELECT * FROM mining_pools")) {
-        result = [
-          { id: 1, name: "F2Pool", fee: 2.5, min_payout: 0.001, location: "Global" },
-          { id: 2, name: "Antpool", fee: 2.0, min_payout: 0.001, location: "China" },
-          { id: 3, name: "Poolin", fee: 2.5, min_payout: 0.0005, location: "Global" },
-          { id: 4, name: "SlushPool", fee: 2.0, min_payout: 0.001, location: "Europe/US" }
-        ];
-      } else if (query.includes("SELECT * FROM electricity_rates")) {
-        result = [
-          { id: 1, country: "USA", avg_rate: 0.12, currency: "USD" },
-          { id: 2, country: "China", avg_rate: 0.08, currency: "USD" },
-          { id: 3, country: "Russia", avg_rate: 0.06, currency: "USD" },
-          { id: 4, country: "Germany", avg_rate: 0.32, currency: "USD" }
         ];
       } else {
         result = [];
@@ -106,8 +96,179 @@ export const DatabaseProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Save calculation to history
+  const saveCalculation = async (result: ProfitabilityResult): Promise<number> => {
+    setLoading(true);
+    try {
+      // In a real implementation, this would insert the calculation into MySQL
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Simulate an ID being returned from the database
+      const id = Math.floor(Math.random() * 1000) + 1;
+      
+      toast({
+        title: "Calculation saved",
+        description: "Your calculation has been saved to history.",
+      });
+      
+      return id;
+    } catch (error) {
+      console.error("Failed to save calculation:", error);
+      toast({
+        variant: "destructive",
+        title: "Save error",
+        description: "Failed to save calculation to history.",
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get calculation history for a user
+  const getCalculationHistory = async (userId: number): Promise<ProfitabilityResult[]> => {
+    setLoading(true);
+    try {
+      // Simulate fetching from database
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Mock data for calculation history
+      const history: ProfitabilityResult[] = [
+        {
+          id: 1,
+          user_id: userId,
+          miner_id: 1,
+          miner_name: "Antminer S19 Pro",
+          crypto_id: 1,
+          crypto_name: "Bitcoin",
+          hashrate: 110,
+          power_consumption: 3250,
+          electricity_rate: 0.12,
+          daily_revenue: 15.42,
+          daily_cost: 9.36,
+          daily_profit: 6.06,
+          monthly_profit: 181.80,
+          calculation_date: new Date().toISOString()
+        },
+        {
+          id: 2,
+          user_id: userId,
+          miner_id: 2,
+          miner_name: "Whatsminer M30S++",
+          crypto_id: 1,
+          crypto_name: "Bitcoin",
+          hashrate: 112,
+          power_consumption: 3472,
+          electricity_rate: 0.10,
+          daily_revenue: 15.72,
+          daily_cost: 8.33,
+          daily_profit: 7.39,
+          monthly_profit: 221.70,
+          calculation_date: new Date(Date.now() - 86400000).toISOString() // 1 day ago
+        },
+        {
+          id: 3,
+          user_id: userId,
+          miner_id: 1,
+          miner_name: "Antminer S19 Pro",
+          crypto_id: 2,
+          crypto_name: "Ethereum",
+          hashrate: 110,
+          power_consumption: 3250,
+          electricity_rate: 0.15,
+          daily_revenue: 16.20,
+          daily_cost: 11.70,
+          daily_profit: 4.50,
+          monthly_profit: 135.00,
+          calculation_date: new Date(Date.now() - 172800000).toISOString() // 2 days ago
+        }
+      ];
+      
+      return history.slice(0, 5); // Return only the last 5 entries
+    } catch (error) {
+      console.error("Failed to get calculation history:", error);
+      toast({
+        variant: "destructive",
+        title: "History error",
+        description: "Failed to retrieve calculation history.",
+      });
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Authenticate user
+  const getUserByCredentials = async (email: string, password: string): Promise<User | null> => {
+    setLoading(true);
+    try {
+      // Simulate authentication delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock user authentication (in a real app, this would query MySQL)
+      if (email === "user@example.com" && password === "password") {
+        return {
+          id: 1,
+          username: "demo_user",
+          email: "user@example.com",
+          created_at: new Date().toISOString()
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error("Authentication error:", error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register new user
+  const registerUser = async (username: string, email: string, password: string): Promise<User | null> => {
+    setLoading(true);
+    try {
+      // Simulate registration delay
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Mock user registration (in a real app, this would insert into MySQL)
+      const newUser: User = {
+        id: Math.floor(Math.random() * 1000) + 1,
+        username,
+        email,
+        created_at: new Date().toISOString()
+      };
+      
+      toast({
+        title: "Registration successful",
+        description: "Your account has been created.",
+      });
+      
+      return newUser;
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: "Failed to create your account. Please try again.",
+      });
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <DatabaseContext.Provider value={{ isConnected, testConnection, executeQuery, loading }}>
+    <DatabaseContext.Provider value={{ 
+      isConnected, 
+      testConnection, 
+      executeQuery, 
+      saveCalculation,
+      getCalculationHistory,
+      getUserByCredentials,
+      registerUser,
+      loading 
+    }}>
       {children}
     </DatabaseContext.Provider>
   );

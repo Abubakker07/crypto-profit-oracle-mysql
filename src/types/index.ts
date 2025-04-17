@@ -1,10 +1,16 @@
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  created_at: string;
+}
+
 export interface Miner {
   id: number;
   name: string;
   hashrate: number;
   power: number;
-  release_date: string;
 }
 
 export interface Cryptocurrency {
@@ -15,27 +21,24 @@ export interface Cryptocurrency {
   algorithm: string;
 }
 
-export interface MiningPool {
-  id: number;
-  name: string;
-  fee: number;
-  min_payout: number;
-  location: string;
-}
-
-export interface ElectricityRate {
-  id: number;
-  country: string;
-  avg_rate: number;
-  currency: string;
-}
-
 export interface ProfitabilityResult {
-  dailyRevenue: number;
-  dailyCost: number;
-  dailyProfit: number;
-  weeklyProfit: number;
-  monthlyProfit: number;
-  yearlyProfit: number;
-  breakEvenDays: number;
+  id?: number;
+  user_id?: number;
+  miner_id: number;
+  miner_name: string;
+  crypto_id: number;
+  crypto_name: string;
+  hashrate: number;
+  power_consumption: number;
+  electricity_rate: number;
+  daily_revenue: number;
+  daily_cost: number;
+  daily_profit: number;
+  monthly_profit: number;
+  calculation_date: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
 }

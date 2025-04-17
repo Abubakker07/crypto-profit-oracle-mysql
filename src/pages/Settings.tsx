@@ -1,54 +1,44 @@
 
 import React from 'react';
-import AppLayout from '@/components/layout/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { useDatabase } from '@/contexts/DatabaseContext';
-import { Database } from 'lucide-react';
+import Layout from '@/components/layout/Layout';
+import { Settings as SettingsIcon, Database, FileText, Shield, Bell } from 'lucide-react';
 
 const Settings = () => {
-  const { isConnected, testConnection, loading } = useDatabase();
+  const { testConnection, loading } = useDatabase();
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
-        <div className="space-y-2">
+    <Layout>
+      <div className="container mx-auto py-6 space-y-6">
+        <div>
           <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
           <p className="text-muted-foreground">
-            Manage your calculator settings and database connection.
+            Configure your calculator preferences and connections
           </p>
         </div>
-
-        <div className="grid gap-6">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Database Connection</CardTitle>
+              <CardTitle className="flex items-center">
+                <Database className="mr-2 h-5 w-5" />
+                Database Settings
+              </CardTitle>
               <CardDescription>
-                Manage your MySQL database connection settings.
+                Configure database connection settings
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="db-connection">Connection Status</Label>
+                  <Label htmlFor="test-connection">Connection Status</Label>
                   <div className="text-sm text-muted-foreground">
-                    {isConnected ? 'Connected to MySQL database' : 'Disconnected'}
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className={`h-2 w-2 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <Label htmlFor="db-connection">{isConnected ? 'Connected' : 'Disconnected'}</Label>
-                </div>
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Test Connection</Label>
-                  <div className="text-sm text-muted-foreground">
-                    Verify that your database connection is working properly.
+                    Test your database connection
                   </div>
                 </div>
                 <Button 
@@ -56,55 +46,179 @@ const Settings = () => {
                   onClick={testConnection}
                   disabled={loading}
                 >
-                  <Database className="mr-2 h-4 w-4" />
                   Test Connection
                 </Button>
               </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="auto-connect">Auto-connect on Startup</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Automatically connect to database on application startup
+                  </div>
+                </div>
+                <Switch id="auto-connect" defaultChecked />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="query-logging">Query Logging</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Log all database queries for debugging
+                  </div>
+                </div>
+                <Switch id="query-logging" />
+              </div>
             </CardContent>
           </Card>
-
+          
           <Card>
             <CardHeader>
-              <CardTitle>Display Settings</CardTitle>
+              <CardTitle className="flex items-center">
+                <SettingsIcon className="mr-2 h-5 w-5" />
+                Calculator Settings
+              </CardTitle>
               <CardDescription>
-                Customize how the calculator displays information.
+                Configure how the calculator works
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="real-time-updates">Real-time Updates</Label>
+                  <Label htmlFor="auto-calculate">Auto-calculate</Label>
                   <div className="text-sm text-muted-foreground">
-                    Update calculations in real-time as values change.
+                    Calculate automatically when inputs change
                   </div>
                 </div>
-                <Switch id="real-time-updates" defaultChecked />
+                <Switch id="auto-calculate" defaultChecked />
               </div>
+              
               <Separator />
+              
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="advanced-metrics">Advanced Metrics</Label>
+                  <Label htmlFor="show-advanced">Advanced Mode</Label>
                   <div className="text-sm text-muted-foreground">
-                    Show additional profitability metrics and calculations.
+                    Show additional mining calculation parameters
                   </div>
                 </div>
-                <Switch id="advanced-metrics" />
+                <Switch id="show-advanced" />
               </div>
+              
               <Separator />
+              
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="dark-mode">Dark Mode</Label>
+                  <Label htmlFor="price-updates">Real-time Price Updates</Label>
                   <div className="text-sm text-muted-foreground">
-                    The calculator is always in dark mode currently.
+                    Update cryptocurrency prices in real-time
                   </div>
                 </div>
-                <Switch id="dark-mode" defaultChecked disabled />
+                <Switch id="price-updates" defaultChecked />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <FileText className="mr-2 h-5 w-5" />
+                Report Settings
+              </CardTitle>
+              <CardDescription>
+                Configure report and export options
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="save-reports">Auto-save Reports</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Automatically save calculation reports to history
+                  </div>
+                </div>
+                <Switch id="save-reports" defaultChecked />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="include-chart">Include Charts</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Include profit charts in exported reports
+                  </div>
+                </div>
+                <Switch id="include-chart" defaultChecked />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="export-pdf">PDF Export</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Enable high-quality PDF exports
+                  </div>
+                </div>
+                <Switch id="export-pdf" defaultChecked />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Shield className="mr-2 h-5 w-5" />
+                Account Settings
+              </CardTitle>
+              <CardDescription>
+                Configure your account preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="save-history">Save Calculation History</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Store your calculation history in your account
+                  </div>
+                </div>
+                <Switch id="save-history" defaultChecked />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="email-notifications">Email Notifications</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Receive email notifications for important updates
+                  </div>
+                </div>
+                <Switch id="email-notifications" />
+              </div>
+              
+              <Separator />
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="session-timeout">Extended Session Timeout</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Keep your session active for longer periods
+                  </div>
+                </div>
+                <Switch id="session-timeout" />
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </AppLayout>
+    </Layout>
   );
 };
 

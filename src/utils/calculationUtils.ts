@@ -1,28 +1,22 @@
 
-import { Miner, Cryptocurrency, MiningPool, ElectricityRate } from "@/types";
+import { Miner, Cryptocurrency, ProfitabilityResult } from "@/types";
 
 export const calculateProfitability = (
   miner: Miner,
   crypto: Cryptocurrency,
-  electricityRate: number,
-  poolFee: number
-) => {
+  electricityRate: number
+): ProfitabilityResult => {
   // Calculate daily revenue (simplified calculation)
-  // For Bitcoin: Daily revenue = (hashrate in TH/s * 24 hours * block reward * block probability) - pool fee
-  // This is simplified for demonstration purposes
   const hashrateTH = miner.hashrate;
   
   // Simplified calculation for daily mining rewards
-  // In a real calculator, this would involve network difficulty, block rewards, etc.
   const dailyReward = crypto.algorithm === "SHA-256" 
     ? (hashrateTH * 0.000008 * crypto.current_price)
     : crypto.algorithm === "Ethash" 
     ? (hashrateTH * 0.00004 * crypto.current_price)
     : (hashrateTH * 0.00001 * crypto.current_price);
     
-  // Apply pool fee
-  const poolFeeAmount = dailyReward * (poolFee / 100);
-  const dailyRevenue = dailyReward - poolFeeAmount;
+  const dailyRevenue = dailyReward;
   
   // Calculate electricity cost
   // kWh per day = Power consumption (W) * 24 hours / 1000
@@ -31,22 +25,21 @@ export const calculateProfitability = (
   
   // Calculate profits
   const dailyProfit = dailyRevenue - dailyCost;
-  const weeklyProfit = dailyProfit * 7;
   const monthlyProfit = dailyProfit * 30;
-  const yearlyProfit = dailyProfit * 365;
-  
-  // Calculate break-even (assuming miner cost is approximately hashrate * $60)
-  const minerCost = miner.hashrate * 60;
-  const breakEvenDays = dailyProfit > 0 ? Math.round(minerCost / dailyProfit) : Infinity;
   
   return {
-    dailyRevenue,
-    dailyCost,
-    dailyProfit,
-    weeklyProfit,
-    monthlyProfit,
-    yearlyProfit,
-    breakEvenDays,
+    miner_id: miner.id,
+    miner_name: miner.name,
+    crypto_id: crypto.id,
+    crypto_name: crypto.name,
+    hashrate: miner.hashrate,
+    power_consumption: miner.power,
+    electricity_rate: electricityRate,
+    daily_revenue: dailyRevenue,
+    daily_cost: dailyCost,
+    daily_profit: dailyProfit,
+    monthly_profit: monthlyProfit,
+    calculation_date: new Date().toISOString()
   };
 };
 
